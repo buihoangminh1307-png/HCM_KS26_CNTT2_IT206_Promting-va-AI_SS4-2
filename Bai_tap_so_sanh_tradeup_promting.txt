@@ -1,0 +1,42 @@
+BÀI TẬP: SO SÁNH TRADE-OFF CÁC GIẢI PHÁP PROMPTING
+Bài toán: Cửa hàng TechShop dùng AI đọc tin nhắn đặt hàng, kiểm tra lỗi và tính tiền.
+Bước 1: Đề xuất 2 prompt mẫu
+Giải pháp 1 (đơn giản, ngắn gọn):
+Đọc tin nhắn đặt hàng của khách, lấy ra tên, SĐT, sản phẩm, số lượng và tính tiền.
+Bảng giá: Chuột 150.000đ, Bàn phím 500.000đ.
+Tin nhắn: "..."
+
+Giải pháp 2 (chi tiết, nhiều ràng buộc):
+Bạn là nhân viên xử lý đơn hàng của TechShop.
+Hãy làm từng bước:
+Bước 1: Lấy ra tên, SĐT, sản phẩm, số lượng.
+Bước 2: Kiểm tra lỗi.
+Bước 3: Tính tiền nếu không có lỗi.
+Bảng giá: Chuột 150.000đ, Bàn phím 500.000đ.
+Quy tắc:
+- Thiếu thông tin thì ghi "THIẾU", không được tự đoán.
+- SĐT không đủ 10 số thì ghi lỗi "SAI SĐT".
+- Số lượng <= 0 thì ghi lỗi "SAI SỐ LƯỢNG".
+- Sản phẩm không có trong bảng giá thì ghi "KHÔNG CÓ HÀNG".
+- Có lỗi thì tổng tiền = null.
+Trả về JSON gồm: suy_luan, ten, sdt, san_pham, so_luong, loi, tong_tien.
+Tin nhắn: "..."
+
+Bước 2: Bảng so sánh Trade-off
+Tiêu chí Giải pháp 1 (Đơn giản) Giải pháp 2 (Chi tiết)  Độ dễ hiểu Cao Trung bình  Tốn token Ít Nhiều hơn  Chặn lỗi biên Trung bình Cực tốt  Độ ổn định kết quả Thấp, hay thay đổi Cao, đúng định dạng  
+Bước 3: Lựa chọn và chạy thử
+Chọn: Giải pháp 2.
+Lý do: Dữ liệu khách gửi thường thiếu hoặc sai (quên ghi số lượng, sai SĐT). Giải pháp 1 ngắn nên AI dễ tự đoán bừa hoặc tính tiền sai. Giải pháp 2 tốn token hơn nhưng có các câu lệnh "Nếu... thì..." và bắt AI suy luận từng bước nên chặn lỗi tốt hơn. Với việc tính tiền thì sai một lần là mất tiền, nên chấp nhận tốn token để an toàn.
+Chạy thử với tin nhắn: "Mình muốn mua bàn phím, SĐT 0912345678"
+Kết quả AI:
+{
+  "suy_luan": "B1: Tên THIẾU, SĐT 0912345678, bàn phím, số lượng THIẾU. B2: SĐT đủ 10 số nên đúng; thiếu tên và số lượng. B3: Có lỗi nên không tính tiền.",
+  "ten": "THIẾU",
+  "sdt": "0912345678",
+  "san_pham": "Bàn phím",
+  "so_luong": "THIẾU",
+  "loi": ["THIẾU TÊN", "THIẾU SỐ LƯỢNG"],
+  "tong_tien": null
+}
+
+Nhận xét: AI phát hiện đúng 2 lỗi thiếu tên và thiếu số lượng, không tự đoán và không tính tiền.
